@@ -1,0 +1,9 @@
+export const MOVE = 'MOVE';
+export const START = 'START';
+export const STOP = 'STOP';
+export const WHITE_TO_PLAY = 'WHITE_TO_PLAY';
+export const BLACK_TO_PLAY= 'BLACK_TO_PLAY';
+export const CHECK = 'CHECK';
+export const CHANGE_BOARD = 'CHANGE_BOARD';
+export const HIGHLIGHT = 'HIGHLIGHT';
+export const CLEAR_HIGHLIGHTS = 'CLEAR_HIGHLIGHTS';

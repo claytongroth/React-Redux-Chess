@@ -12,12 +12,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-
-.board{
-  width: 384px;
-  border-style: solid;
+.chesspiececontainer{
+  display: inline-block;
+}
+.chesspiece{
+  height: 40px;
+  width: 40px;
 }
 
+.board{
+  display: inline-block;
+  width: 384px;
+  height: 384px;
+}
+.boardside{
+  text-align: center;
+}
 .Square {
   background: transparent;
   border: 1px solid transparent;
@@ -32,10 +42,17 @@ code {
   text-align: center;
   width: 48px;
 }
+
 .black {
     background-color: #e08b3e;
 }
 
 .white {
   background-color: #ffffc3;
+}
+.highlighted {
+  border: 3px solid yellow !important;
+}
+.capturable {
+  border: 3px solid red !important;
 }
