@@ -6,7 +6,9 @@ import {WHITE_TO_PLAY,
         CHECK,
         CHANGE_BOARD,
         HIGHLIGHT,
-        CLEAR_HIGHLIGHTS
+        CLEAR_HIGHLIGHTS,
+        PUSH_CAPTURE_BLK,
+        PUSH_CAPTURE_WHT
  } from '../constants/actionTypes'
 
 
@@ -15,14 +17,16 @@ export const initialChessState = {
   gameOver: false,
   moves: [],
   currentPlayer: "w",
-  inCheck: false,
+  currentPlayerInCheck: false,
   whitesCaptures: [],
   blacksCaptures: [],
   highlightedSquares: {
     selectedPiece: "",
     selectedPieceSrc: "",
     availables: [],
-    captures: []
+    captures: [],
+    intoCheck: []
+
   },
   board: {
     a: ["br","bn","bb","bk","bq","bb","bn","e"],
@@ -41,10 +45,10 @@ export const initialChessState = {
 export default function reducer(state=initialChessState, action){
   switch (action.type){
     case WHITE_TO_PLAY:{
-      return {...state, currentPlayer: "b"}
+      return {...state, currentPlayer: "w"}
     }
     case BLACK_TO_PLAY:{
-      return {...state, currentPlayer: "w"}
+      return {...state, currentPlayer: "b"}
     }
     case START:{
       return {...state, started:true}
@@ -58,12 +62,22 @@ export default function reducer(state=initialChessState, action){
       return {...state, moves: newMove}
     }
     case CHECK:{
-      return {...state, inCheck: true}
+      return {...state, currentPlayerInCheck: true}
     }
     case CHANGE_BOARD:{
       // search for the "piece" on the "src" square, Move it to "dest" replace src square with empty
       let newBoard = action.payload
       return {...state, board: newBoard }
+    }
+    case PUSH_CAPTURE_BLK:{
+      let newCap = state.blacksCaptures.concat(action.payload)
+      // search for the "piece" on the "src" square, Move it to "dest" replace src square with empty
+      return {...state, blacksCaptures: newCap}
+    }
+    case PUSH_CAPTURE_WHT:{
+      let newCap = state.whitesCaptures.concat(action.payload)
+      // search for the "piece" on the "src" square, Move it to "dest" replace src square with empty
+      return {...state,  whitesCaptures: newCap}
     }
     case HIGHLIGHT: {
       return {...state, highlightedSquares: action.payload}

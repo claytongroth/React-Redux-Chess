@@ -13,12 +13,15 @@ import {
   BLACK_TO_PLAY,
   CHANGE_BOARD,
   HIGHLIGHT,
-  CLEAR_HIGHLIGHTS
+  CLEAR_HIGHLIGHTS,
+  PUSH_CAPTURE_BLK,
+  PUSH_CAPTURE_WHT
 } from './constants/actionTypes';
 import letters from './constants/letters';
 import {toXY} from './constants/matrix';
 import {toChess} from './constants/toChessNotation';
 import {possibleRookMoves} from './movesets/rookmoves';
+import {possiblePawnMoves} from './movesets/pawnmoves';
 //TODO is it better to store the function for movement in the piece components themselves or here?
 
 // TODO [AFTER EVERYTHING IS WORKING!!!] change everything to make ABC as X, 123 as Y
@@ -26,45 +29,36 @@ import {possibleRookMoves} from './movesets/rookmoves';
 //    ... ... ...
 /// 1:  ["a", "b", "c", "d", "e", "f", "g", "h"];
 
-//TODO NEXT 5/12
-// create the ready to move function
-// complete all move functionality for rook, then move on to other pieces.
-const newBoard =   {
-  a: ["br","bn","bb","bk","bq","bb","bn","br"],
-  b: ["bp","bp","bp","bp","bp","bp","bp","bp"],
-  c: ["e","e","e","e","e","e","e","e"],
-  d: ["e","e","e","e","e","e","e","e"],
-  e: ["e","e","e","e","e","e","e","e"],
-  f: ["e","e","wn","e","e","e","e","e"],
-  g: ["wp","wp","wp","wp","wp","wp","wp","wp"],
-  h: ["wr","e","wb","wk","wq","wb","wn","wr"]
-}
+/// change as many for loops to MAPS as can
+
+//TODO NEXT 5/16
+// Move functionality for Check/CheckMAte!
+    // will need to edit availableSquares
+// pawn transform
+// Reverse Moves button
+// Show current layer on screen
+
 
 class App extends React.Component{
   squareClick(key){
-
-    //TODO wrap all of this in a conditional for whose turn it is?
     this.props.clearHighlights()
     const {selectedPiece,selectedPieceSrc,captures,availables} = this.props.highlightedSquares
     const piece = key.currentTarget.getAttribute("piece")
     const square = key.currentTarget.getAttribute("keyp")
-    console.log("Square: ", square, "Piece: ", piece, "XY: ", toXY(square))
+    //console.log("Square: ", square, "Piece: ", piece, "XY: ", toXY(square))
     // maybe consider doing different highlight for enemies on hover....
     if (piece != "e" && piece.charAt(0) === this.props.currentPlayer){
       this.calculateAvailableSquares(square, piece, this.props.board)
     }
     if ((availables.indexOf(square) !== -1) ||(captures.indexOf(square) !== -1) ){
-      console.log("keyp ", square, " is in the avialable squares for: ", selectedPiece, "source of selected: ", selectedPieceSrc)
       this.props.dispatchMove(selectedPiece, selectedPieceSrc, square)
-      //this.props.clearHighlights()
-      //TODO Get the board updated.... just use the src and dst to overwrite part of board
-
+      this.readyToMove(selectedPiece, selectedPieceSrc, square, captures)
     }
   }
   componentDidUpdate(prevProps){
-    console.log("component did update")
+    //console.log("component did update")
     if(prevProps.board !== this.props.board){
-      console.log("updating board....", this.props.board)
+      //console.log("updating board....", this.props.board)
     }
  }
   calculateAvailableSquares(pos, piece, board){
@@ -74,18 +68,30 @@ class App extends React.Component{
       case "wr": case "br":
         moves = possibleRookMoves(pos, this.props.board, piece)
         this.props.highlightSquares(moves)
+        break;
+      case "wp": case "bp":
+        moves = possiblePawnMoves(pos, this.props.board, piece)
+        this.props.highlightSquares(moves)
+        break;
         //this.readyToMove(piece, src, dest)
         // next a function where I can click and submit a move...
         //// this function also alows highlighting...
     }
   }
-  readyToMove(){
-    // allow hover styles on availableSquares
-    // only fire the event if clicking on highlighted squares.
-    // next click fires the actions: CHANGE_BOARD, and MOVE
-    ////// IF I capture another piece, then add to white/black's Captures
-    // after this, it fire the WHITE_TO_PLAY/ BLACK_TO_PLAY action
-
+  readyToMove(selectedPiece, selectedPieceSrc, square, captures){
+      const srcrow = selectedPieceSrc.charAt(0),
+            srccol = selectedPieceSrc.charAt(1),
+            dstrow = square.charAt(0),
+            dstcol = square.charAt(1),
+            capture = this.props.board[dstrow][dstcol],
+            newBoard = {...this.props.board}
+      newBoard[srcrow][srccol] = "e"
+      newBoard[dstrow][dstcol] = selectedPiece
+      this.props.updateBoard(newBoard)
+      captures.indexOf(square) !== -1 &&  selectedPiece.charAt(0) === "w" ? this.props.pushWhiteCap(capture) : console.log("WHITE PIECE MOVED!!!")
+      captures.indexOf(square) !== -1 &&  selectedPiece.charAt(0) === "b" ? console.log("White PIECE CAPTURED!!!") : console.log("Black PIECE MOVED!!!")
+      this.props.currentPlayer === "w" ? this.props.blackToPlay() : this.props.whiteToPlay()
+      this.props.clearHighlights();
   }
   moveMeParent(e){
   }
@@ -98,16 +104,21 @@ class App extends React.Component{
               parentMethod={(key)=>this.squareClick(key)}
               moveMe={(e)=>this.moveMeParent(e)}
             />
-            {this.props.gameOver ? "GAME OVER": this.props.currentPlayer + " To play..."}
+
           </div>
           <div className="col-lg-6 col-md-6 col-sm-12 no-gutters">
             This is my React-Redux Chess game!
             <br/>
             <button onClick={this.props.onClickButtonStart}>Start the Game</button>
             <button onClick={this.props.onClickButtonStop}>Stop the Game</button>
-            <button onClick={this.props.onClickButtonSwitch}>Switch the Player</button>
-            <button onClick={this.props.onClickButtonMove}>Test Move</button>
-            <Pawn/>
+            <br/>
+            {this.props.gameOver ? "GAME OVER": this.props.currentPlayer + " To play..."}
+            <br/>
+            {"Current Player: " + this.props.currentPlayer}
+            <br/>
+            {"Black Captured: " + this.props.blacksCaptures}
+            <br/>
+            {"White Captured: " + this.props.whitesCaptures}
           </div>
         </div>
       </div>
@@ -126,7 +137,9 @@ const mapStateToProps = (state) => {
     gameOver: state.chessReducer.gameOver,
     moves: state.chessReducer.moves,
     currentPlayer: state.chessReducer.currentPlayer,
-    inCheck: state.chessReducer.inCheck,
+    currentPlayerInCheck: state.chessReducer.currentPlayerInCheck,
+    whitesCaptures: state.chessReducer.whitesCaptures,
+    blacksCaptures: state.chessReducer.blacksCaptures,
     highlightedSquares: state.chessReducer.highlightedSquares,
     board: state.chessReducer.board
   }
@@ -135,19 +148,17 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => ({
   onClickButtonStart: () => dispatch({ type: START}),
   onClickButtonStop: () => dispatch({ type: STOP}),
-  onClickButtonSwitch: ()=> dispatch({ type: WHITE_TO_PLAY}),
-  onClickButtonMove: ()=> dispatch({ type: MOVE, payload: {
-    piece: "wn",
-    src: "b1",
-    dst: "c3"
-  }}),
-
+  whiteToPlay: ()=> dispatch({ type: WHITE_TO_PLAY}),
+  blackToPlay: ()=> dispatch({ type: BLACK_TO_PLAY}),
   dispatchMove: (piece, src, dst) => dispatch({ type: MOVE, payload:{
     piece: piece,
     src: src,
     dst: dst
   }}),
-  onClickButtonMove: ()=> dispatch({type: CHANGE_BOARD, payload: newBoard}),
+  pushWhiteCap: (piece)=> dispatch({type: PUSH_CAPTURE_WHT, payload: piece}),
+  pushBlackCap: (piece)=> dispatch({type: PUSH_CAPTURE_BLK, payload: piece}),
+  updateBoard: (updBoard)=> dispatch({type: CHANGE_BOARD, payload: updBoard}),
+  onClickButtonMove: (updBoard)=> dispatch({type: CHANGE_BOARD, payload: updBoard}),
   highlightSquares: (squares)=> dispatch({type: HIGHLIGHT, payload: squares}),
   clearHighlights: ()=> dispatch({type: CLEAR_HIGHLIGHTS})
 });
@@ -158,7 +169,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 // TODO next:
 //________________________________________________________
-// Next click goes to the MOVE/ CHANGE_BOARD actions
 // Clear out unecessary data clutter
 // piece components contain their behavior info
 

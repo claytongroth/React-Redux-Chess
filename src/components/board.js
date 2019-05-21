@@ -83,13 +83,15 @@ class Board extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log("state from inside mapStateToProps: ", {...state})
+  //console.log("state from inside mapStateToProps: ", {...state})
   return {
     started: state.chessReducer.started,
     gameOver: state.chessReducer.gameOver,
     moves: state.chessReducer.moves,
     currentPlayer: state.chessReducer.currentPlayer,
-    inCheck: state.chessReducer.inCheck,
+    currentPlayerInCheck: state.chessReducer.currentPlayerInCheck,
+    whitesCaptures: state.chessReducer.whitesCaptures,
+    blacksCaptures: state.chessReducer.blacksCaptures,
     highlightedSquares: state.chessReducer.highlightedSquares,
     board: state.chessReducer.board
   }

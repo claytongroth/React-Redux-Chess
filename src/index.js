@@ -7,7 +7,7 @@ import {Provider} from 'react-redux';
 import store from './store'
 
 store.subscribe(()=> {
-  console.log("store changed: ", store.getState())
+  //console.log("store changed: ", store.getState())
 })
 console.log("Full State: ", store.getState())
 
