@@ -8,7 +8,9 @@ import {WHITE_TO_PLAY,
         HIGHLIGHT,
         CLEAR_HIGHLIGHTS,
         PUSH_CAPTURE_BLK,
-        PUSH_CAPTURE_WHT
+        PUSH_CAPTURE_WHT,
+        UNDO,
+        REDO
  } from '../constants/actionTypes'
 
 
@@ -24,20 +26,20 @@ export const initialChessState = {
     selectedPiece: "",
     selectedPieceSrc: "",
     availables: [],
-    captures: [],
-    intoCheck: []
-
+    captures: []
   },
+  pastBoard:[],
   board: {
-    a: ["br","bn","bb","bk","bq","bb","bn","e"],
-    b: ["bp","bp","bp","bp","bp","bp","bp","bp"],
-    c: ["e","e","e","e","e","e","e","e"],
-    d: ["e","br","e","wr","e","e","e","e"],
+    a: ["br","bn","bb","bq","bk","bb","bn","br"],
+    b: ["bp","bp","bp","bp","bp","e","bp","bp"],
+    c: ["e","e","wp","e","e","e","e","e"],
+    d: ["e","e","e","e","e","e","e","e"],
     e: ["e","e","e","e","e","e","e","e"],
-    f: ["e","e","e","e","e","e","e","e"],
-    g: ["wp","wp","wp","wp","wp","wp","wp","wp"],
-    h: ["wr","wn","wb","wk","wq","wb","wn","e"]
-  }
+    f: ["e","e","e","e","bp","e","e","e"],
+    g: ["wp","e","wp","wp","wp","wp","wp","wp"],
+    h: ["wr","wn","wb","wq","wk","wb","wn","wr"]
+  },
+  futureBoard:[]
 }
 
 
@@ -56,6 +58,32 @@ export default function reducer(state=initialChessState, action){
     case STOP:{
       return {...state, gameOver:true}
     }
+    case UNDO:{
+      console.log("UNDO fired with : ", state.pastBoard)
+      if (state.pastBoard.length > 1){
+        const previous = state.pastBoard[state.pastBoard.length - 2]
+        console.log("Previous: ", previous)
+        const newPast = state.pastBoard.slice(0, state.pastBoard.length - 1)
+        return {
+            ...state,
+            pastBoard: newPast,
+            board: previous,
+            futureBoard: [state.board, ...state.futureBoard]
+        }
+      }
+    }
+    case REDO:{
+      if (state.futureBoard.length > 0){
+        const next = state.futureBoard[0]
+        const newFuture = state.futureBoard.slice(1)
+         return {
+           ...state,
+           pastBoard: [...state.pastBoard, state.board],
+           board: next,
+           futureBoard: newFuture
+         }
+     }
+    }
     case MOVE:{
       let newMove = state.moves.concat(action.payload)
       // search for the "piece" on the "src" square, Move it to "dest" replace src square with empty
@@ -66,8 +94,13 @@ export default function reducer(state=initialChessState, action){
     }
     case CHANGE_BOARD:{
       // search for the "piece" on the "src" square, Move it to "dest" replace src square with empty
-      let newBoard = action.payload
-      return {...state, board: newBoard }
+      console.log(state.board)
+      const newBoard = action.payload
+      return {
+        ...state,
+        pastBoard: state.pastBoard.concat(state.board),
+        board: newBoard
+      }
     }
     case PUSH_CAPTURE_BLK:{
       let newCap = state.blacksCaptures.concat(action.payload)

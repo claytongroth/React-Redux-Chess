@@ -1,7 +1,6 @@
 import letters from '../constants/letters';
 import {toXY} from '../constants/matrix';
 import {toChess} from '../constants/toChessNotation';
-import {isMoveIntoCheck} from './isMoveIntoCheck';
 //TODO make this handle color
 //TODO refactor this to be more concise...
 export function possibleRookMoves(src, board, piece){
@@ -10,10 +9,8 @@ export function possibleRookMoves(src, board, piece){
     selectedPiece: piece,
     selectedPieceSrc: src,
     captures: [],
-    availables: [],
-    intoCheck: []
+    availables: []
   }
-  console.log("firing toXY with: ", src)
   let coords = toXY(src)
   let x = coords[0] // 7
   let y = coords[1] // 2
@@ -74,13 +71,5 @@ export function possibleRookMoves(src, board, piece){
     }
      ydown--;
   }
-  // fire isMoveIntoCheck
-  // if a move is in the returned array, remove it from captures or availables
-  //return availableSquares
-  //isMoveIntoCheck(piece, src, aSquares, board)
-  const intoCheckMoves = isMoveIntoCheck(piece, src, availableSquares.availables.concat(availableSquares.captures), board)
-  availableSquares.intoCheck = intoCheckMoves
-  availableSquares.availables.filter( x => availableSquares.intoCheck.indexOf(x)!= -1)
-  console.log("availableSquares: ", availableSquares)
   return availableSquares
 }

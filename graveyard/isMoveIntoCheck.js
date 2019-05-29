@@ -1,4 +1,6 @@
 import letters from '../constants/letters';
+import {possibleRookMoves} from '../movesets/rookmoves';
+
 // fire this before returning to availableSquare is "piece"Moves.js
 
 // Consider just having a king in check checker and reversing moves
@@ -17,16 +19,18 @@ export function isMoveIntoCheck(piece, src, aSquares, board){
     resultingBoard[src_row][src_col] = "e"
     resultingBoard[aSquare[0]][aSquare[1]] = piece
     // iterate through all enemy pieces
-    console.log("Resulting Board: ", resultingBoard)
     letters.map(
       row => (resultingBoard[row]).map(
         square => {
           switch(square){
             case "br":
+              // possibleRookMoves(src, board, piece)
               console.log("  Here fire the possibleRookMoves function with: ", square, " at ", row + resultingBoard[row].indexOf(square))
+              let enemyRook = possibleRookMoves(row + resultingBoard[row].indexOf(square), resultingBoard, square)
+              console.log("emenyRook: ", enemyRook)
               // if this piece can capture king push the square to the intoCheckArray
               //TODO write actual logic for the king...
-              intoCheckArray.push(aSquare)
+              intoCheckArray.push(aSquare) //
               // if not push to movesArray
               //movesArray.push(aSquare)
               break;

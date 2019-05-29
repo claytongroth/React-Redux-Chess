@@ -15,13 +15,24 @@ import {
   HIGHLIGHT,
   CLEAR_HIGHLIGHTS,
   PUSH_CAPTURE_BLK,
-  PUSH_CAPTURE_WHT
+  PUSH_CAPTURE_WHT,
+  UNDO,
+  REDO
 } from './constants/actionTypes';
 import letters from './constants/letters';
 import {toXY} from './constants/matrix';
 import {toChess} from './constants/toChessNotation';
+import {kingChecker} from './constants/kingchecker';
+import {checkmateChecker} from './constants/checkmateChecker';
 import {possibleRookMoves} from './movesets/rookmoves';
 import {possiblePawnMoves} from './movesets/pawnmoves';
+import {possibleQueenMoves} from './movesets/queenmoves';
+import {possibleBishopMoves} from './movesets/bishopmoves';
+import {possibleKingMoves} from './movesets/kingmoves';
+import {possibleKnightMoves} from './movesets/knightmoves';
+import {capToPiece} from './constants/capToPiece';
+
+
 //TODO is it better to store the function for movement in the piece components themselves or here?
 
 // TODO [AFTER EVERYTHING IS WORKING!!!] change everything to make ABC as X, 123 as Y
@@ -30,13 +41,16 @@ import {possiblePawnMoves} from './movesets/pawnmoves';
 /// 1:  ["a", "b", "c", "d", "e", "f", "g", "h"];
 
 /// change as many for loops to MAPS as can
+/// REFCTOR!!!
 
-//TODO NEXT 5/16
-// Move functionality for Check/CheckMAte!
-    // will need to edit availableSquares
+//TODO NEXT 5/28
+// current player div CSS!!!!
+// Modal for check warning as well as flash piece function!!!
+// storing moves and caps properly?
 // pawn transform
-// Reverse Moves button
-// Show current layer on screen
+// castling
+// fixes and make it look better
+// concede button
 
 
 class App extends React.Component{
@@ -62,7 +76,7 @@ class App extends React.Component{
     }
  }
   calculateAvailableSquares(pos, piece, board){
-    console.log("calculateAvailableSquares fired with: ", pos, piece, board)
+    //console.log("calculateAvailableSquares fired with: ", pos, piece, board)
     let moves;
     switch(piece){
       case "wr": case "br":
@@ -71,6 +85,22 @@ class App extends React.Component{
         break;
       case "wp": case "bp":
         moves = possiblePawnMoves(pos, this.props.board, piece)
+        this.props.highlightSquares(moves)
+        break;
+      case "wq": case "bq":
+        moves = possibleQueenMoves(pos, this.props.board, piece)
+        this.props.highlightSquares(moves)
+        break;
+      case "wb": case "bb":
+        moves = possibleBishopMoves(pos, this.props.board, piece)
+        this.props.highlightSquares(moves)
+        break;
+      case "wk": case "bk":
+        moves = possibleKingMoves(pos, this.props.board, piece)
+        this.props.highlightSquares(moves)
+        break;
+      case "wn": case "bn":
+        moves = possibleKnightMoves(pos, this.props.board, piece)
         this.props.highlightSquares(moves)
         break;
         //this.readyToMove(piece, src, dest)
@@ -83,42 +113,95 @@ class App extends React.Component{
             srccol = selectedPieceSrc.charAt(1),
             dstrow = square.charAt(0),
             dstcol = square.charAt(1),
+            color = selectedPiece.charAt(0),
             capture = this.props.board[dstrow][dstcol],
-            newBoard = {...this.props.board}
+            newBoard = JSON.parse(JSON.stringify(this.props.board)) // {...this.props.board}
       newBoard[srcrow][srccol] = "e"
       newBoard[dstrow][dstcol] = selectedPiece
+      //let the move appear, then validate it
       this.props.updateBoard(newBoard)
-      captures.indexOf(square) !== -1 &&  selectedPiece.charAt(0) === "w" ? this.props.pushWhiteCap(capture) : console.log("WHITE PIECE MOVED!!!")
-      captures.indexOf(square) !== -1 &&  selectedPiece.charAt(0) === "b" ? console.log("White PIECE CAPTURED!!!") : console.log("Black PIECE MOVED!!!")
-      this.props.currentPlayer === "w" ? this.props.blackToPlay() : this.props.whiteToPlay()
-      this.props.clearHighlights();
+      if (this.validateMove(newBoard, color) === false){
+        this.props.updateBoard(newBoard)
+        captures.indexOf(square) !== -1 &&  selectedPiece.charAt(0) === "w" ? this.props.pushWhiteCap(capture) : console.log("WHITE PIECE MOVED!!!")
+        captures.indexOf(square) !== -1 &&  selectedPiece.charAt(0) === "b" ? this.props.pushBlackCap(capture) : console.log("Black PIECE MOVED!!!")
+        this.props.currentPlayer === "w" ? this.props.blackToPlay() : this.props.whiteToPlay();
+        //TODO, check if the move results in checkmate here
+        if (checkmateChecker(newBoard, color) === true){ alert("Checkmate! "+ color+ " wins!")}
+        this.props.clearHighlights();
+      } else {
+        setTimeout(()=>{
+
+          this.props.undoAction();
+          alert("This move will place you in check!");
+
+        },200);
+      }
   }
   moveMeParent(e){
+  }
+  backOne(){
+    this.props.undoAction()
+    //if the past board is different... change player
+    if(this.props.pastBoard.length > 0 && this.props.pastBoard !== this.props.board){
+      this.props.currentPlayer === "w" ? this.props.blackToPlay() : this.props.whiteToPlay();
+    }
+  }
+  forwardOne(){
+    this.props.redoAction()
+    if(this.props.futureBoard.length > 0 && this.props.futureBoard !== this.props.board){
+      this.props.currentPlayer === "w" ? this.props.blackToPlay() : this.props.whiteToPlay();
+    }
+  }
+  blackGraveyard(){
+    return (<div className="captured">{capToPiece(this.props.blacksCaptures)}</div>)
+  }
+  whiteGraveyard(){
+    return (<div className="captured">{capToPiece(this.props.whitesCaptures)}</div>)
+  }
+  validateMove(newBoard, color){
+    let moveintoCheck;
+    moveintoCheck = kingChecker(newBoard, color)
+    console.log("moveintoCheck returned: ", moveintoCheck)
+    return moveintoCheck;
   }
   render(){
     return (
       <div className="App">
-        <div className="row">
-          <div className="col-lg-6 col-md-6 col-sm-12 boardside no-gutters">
+        <div id="main" className="row">
+          <div className="col-lg-4 col-md-6 col-sm-12 boardside no-gutters border border-secondary">
             <Board
               parentMethod={(key)=>this.squareClick(key)}
               moveMe={(e)=>this.moveMeParent(e)}
             />
 
           </div>
-          <div className="col-lg-6 col-md-6 col-sm-12 no-gutters">
+          <div className="col-lg-4 col-md-6 col-sm-12 statside no-gutters border border-secondary">
             This is my React-Redux Chess game!
             <br/>
             <button onClick={this.props.onClickButtonStart}>Start the Game</button>
             <button onClick={this.props.onClickButtonStop}>Stop the Game</button>
+
             <br/>
-            {this.props.gameOver ? "GAME OVER": this.props.currentPlayer + " To play..."}
+            <button onClick={()=>this.forwardOne()}>REDO</button>
+            <button onClick={()=>this.backOne()}>UNDO</button>
+            <div id="graverow" className="row">
+              <div id= "blackgrave" className="col-lg-6 col-md-6 col-sm-6 border border-light">
+                {"Black Captured: "}
+                <br/>
+                { this.blackGraveyard()}
+              </div>
+              <div id="whitegrave" className="col-lg-6 col-md-6 col-sm-6 border border-dark">
+                {"White Captured: "}
+                <br/>
+                { this.whiteGraveyard()}
+              </div>
+            </div>
+            <div className="col-lg-12 col-md-12 col-sm-12 current border border-secondary">
+              {"Current Player: "}{ this.props.currentPlayer === "w" ? "White" : "Black"}
+            </div>
             <br/>
-            {"Current Player: " + this.props.currentPlayer}
+            {this.props.gameOver ? "GAME OVER": null}
             <br/>
-            {"Black Captured: " + this.props.blacksCaptures}
-            <br/>
-            {"White Captured: " + this.props.whitesCaptures}
           </div>
         </div>
       </div>
@@ -141,7 +224,9 @@ const mapStateToProps = (state) => {
     whitesCaptures: state.chessReducer.whitesCaptures,
     blacksCaptures: state.chessReducer.blacksCaptures,
     highlightedSquares: state.chessReducer.highlightedSquares,
-    board: state.chessReducer.board
+    board: state.chessReducer.board,
+    pastBoard:state.chessReducer.pastBoard,
+    futureBoard:state.chessReducer.futureBoard
   }
 };
 
@@ -160,7 +245,9 @@ const mapDispatchToProps = dispatch => ({
   updateBoard: (updBoard)=> dispatch({type: CHANGE_BOARD, payload: updBoard}),
   onClickButtonMove: (updBoard)=> dispatch({type: CHANGE_BOARD, payload: updBoard}),
   highlightSquares: (squares)=> dispatch({type: HIGHLIGHT, payload: squares}),
-  clearHighlights: ()=> dispatch({type: CLEAR_HIGHLIGHTS})
+  clearHighlights: ()=> dispatch({type: CLEAR_HIGHLIGHTS}),
+  undoAction: ()=> dispatch({type: UNDO}),
+  redoAction: ()=> dispatch({type: REDO})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

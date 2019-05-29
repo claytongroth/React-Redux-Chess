@@ -12,6 +12,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+#main{
+  margin-top: auto;
+  margin: auto;
+  width: 80%;
+  height: 100%;
+}
+.row{
+  margin-right: 0 !important;
+}
 .chesspiececontainer{
   display: inline-block;
 }
@@ -21,12 +30,18 @@ code {
 }
 
 .board{
+  margin-top: 10%;
   display: inline-block;
   width: 384px;
   height: 384px;
 }
 .boardside{
+  border-radius: 20px;
   text-align: center;
+}
+.statside{
+  border-radius: 20px;
+  /*margin-top: 5%;*/
 }
 .Square {
   background: transparent;
@@ -55,4 +70,27 @@ code {
 }
 .capturable {
   border: 3px solid red !important;
+}
+#graverow{
+  height: 200px;
+}
+#whitegrave{
+  height: 100%;
+  border-radius: 20px;
+  background-color: white;
+}
+#blackgrave{
+  height: 100%;
+  color: white;
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.current{
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 20px;
+}
+.captured{
+  text-align: left;
+  display: inline-flex;
 }

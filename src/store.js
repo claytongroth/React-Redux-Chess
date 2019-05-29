@@ -7,7 +7,7 @@ import {initialChessState} from './reducers/chessReducer'
 import chessReducer from './reducers/chessReducer';
 
 
-const middleware = applyMiddleware(promise, thunk, logger)
+const middleware = applyMiddleware(promise, thunk)//, logger)
 
 
 export default createStore(combineReducers({

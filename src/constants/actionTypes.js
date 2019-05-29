@@ -9,3 +9,5 @@ export const HIGHLIGHT = 'HIGHLIGHT';
 export const CLEAR_HIGHLIGHTS = 'CLEAR_HIGHLIGHTS';
 export const PUSH_CAPTURE_BLK = 'PUSH_CAPTURE_BLK';
 export const PUSH_CAPTURE_WHT = 'PUSH_CAPTURE_WHT';
+export const REDO = 'REDO';
+export const UNDO = 'UNDO';
