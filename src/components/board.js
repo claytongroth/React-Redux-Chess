@@ -17,7 +17,6 @@ class Board extends React.Component {
   this.returnSquare = this.returnSquare.bind(this)
   this.makeLayout = this.makeLayout.bind(this)
   }
-  // I think ideally it renders off of state.
   makeLayout(piece){
     switch(piece){
       case "bp":
@@ -64,18 +63,15 @@ class Board extends React.Component {
             />
   }
   render(){
-    //const letters = ["a", "b", "c", "d", "e", "f", "g", "h",]
     const board = [];
     for (let p=0; p < letters.length; p++){
       let letter = Object.keys(this.props.board)[p]
       for (let q=0; q < this.props.board[letters[p]].length; q++){
         let number = q;
-        //console.log(letter, number);
       ( ((p % 2 === 0) && (q % 2 === 0)) || (!(p % 2 === 0) && !(q % 2 === 0)) ) ? board.push(this.returnSquare(number, letter, "white", letter+number)) : board.push(this.returnSquare(number, letter, "black", letter+number))
       }
     }
 
-    //console.log(board)
     return(
       <div className="board">{board}</div>
     )

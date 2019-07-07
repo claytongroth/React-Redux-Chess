@@ -9,8 +9,6 @@ import {possibleRookMoves} from '../movesets/rookmoves';
 import {possibleBishopMoves} from '../movesets/bishopmoves';
 
 
-//TODO FIX THIS!!!!
-// check if the move puts the enemy in checkmate!!!
 export function checkmateChecker(newBoard, color){
   let opposingColor = color === "w"? "b" : "w";
   console.log("checking if ", opposingColor, " is in checkmate...")
@@ -59,6 +57,5 @@ export function checkmateChecker(newBoard, color){
 
   const checkMate = kingCanGo.every(x => kingCantGo.indexOf(x) > -1);
   console.log(opposingColor, " is in checkmate? ", checkMate)
-  //if (checkMate == true){alert("Checkmate!")}
   return checkMate
 }

@@ -29,16 +29,13 @@ export function possiblePawnMoves(src, board, piece){
       // TODO Refactor
       //let diagCaps = hasMoved ? [board[toChess([x,yup])[0]][x+1],board[toChess([x,yup])[0]][x-1]] : [board[toChess([x,yup-1])[0]][x+1],board[toChess([x,yup-1])[0]][x-1]]
       let diagCaps = hasMoved ? [board[toChess([x,yup])[0]][x+1],board[toChess([x,yup])[0]][x-1]] : [board[toChess([x,yup])[0]][x+1],board[toChess([x,yup])[0]][x-1]]
-      //console.log(diagCaps)
       if (squareContains == "e"){
         availableSquares.availables.push(toChess([x, yup]))
       }
       if (diagCaps[0] != undefined && diagCaps[0].charAt(0) === opposingColor) {
-        //console.log(diagCaps)
         availableSquares.captures.push(toChess([x+1,yup]))
       }
       if (diagCaps[1] != undefined && diagCaps[1].charAt(0) === opposingColor){
-        //console.log(diagCaps)
         availableSquares.captures.push(toChess([x-1,yup]));
       }
       yup++;
@@ -57,17 +54,13 @@ export function possiblePawnMoves(src, board, piece){
         availableSquares.availables.push(toChess([x, ydown]))
       }
       if (diagCaps[0] != undefined && diagCaps[0].charAt(0) === opposingColor) {
-        //console.log(diagCaps)
         availableSquares.captures.push(toChess([x+1,ydown]))
       }
       if (diagCaps[1] != undefined && diagCaps[1].charAt(0) === opposingColor){
-        //console.log(diagCaps)
         availableSquares.captures.push(toChess([x-1,ydown]));
       }
        ydown--;
     }
   }
-  // Capturing...
-  //console.log("Squares  ", availableSquares)
   return availableSquares
 }

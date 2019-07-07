@@ -12,7 +12,6 @@ class Square extends React.Component {
         onClick={(e)=>this.props.boardclick(e)}
         keyp={this.props.lett + this.props.num}
         className={"Square " + this.props.color + (this.props.highlightAvailable? " highlighted": this.props.highlightCapture? " capturable" : "")}
-        // could have a highlighted squares section of state and work from there
         piece={this.props.currentpiecename}
       >
         {this.props.currentpiece}
@@ -21,21 +20,3 @@ class Square extends React.Component {
   }
 }
 export default Square;
-
-
-/*
-export default function Square(props) {
-    return (
-      <button
-        onClick={(e)=>props.boardclick(e)}
-        keyp={props.lett + props.num}
-        //ref = {props.lett + props.num}
-        className={"Square " + props.color}
-        piece={props.currentpiecename}
-      >
-        {props.currentpiece}
-      </button>
-    );
-
-}
-*/

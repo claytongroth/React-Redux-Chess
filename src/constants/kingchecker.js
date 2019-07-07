@@ -16,9 +16,6 @@ export function kingChecker(newBoard, color){
   let kingCaps = []
   // consume the new board
   const kingPos = findPiece(color+"k", newBoard)
-  //console.log("the King is at ", kingPos)
-  // fire the following functions for the king piece to fill its availableSquares object.
-  // do this for just queen moves!!!!!!! whatPiece(rooks[i], newBoard) === (opposingColor + "r" || opposingColor + "b" || opposingColor + "q")
   const queens = possibleQueenMoves(kingPos, newBoard, color+"k").captures
   for (let i=0;i<queens.length;i++){
      if (whatPiece(queens[i], newBoard) === opposingColor + "q"){

@@ -17,34 +17,3 @@ export default createStore(combineReducers({
   //gameOver,
   //currentPlayer
 }), initialChessState, middleware )
-
-
-// LEFT OFF HERE https://www.youtube.com/watch?v=nrg7zhgJd4w
-
-/*
-GOALS:
-_______________
->get redux actions and reducers set up with a state that logs all moves
->> moves logged like
-            moves = [{
-              player: "white",
-              piece: "Bishop",
-              src: "A1",
-              dest: "B2",
-              incheck: false,
-              incheckmate: false
-            },
-            {
-              player: "black",
-              piece: "pawn",
-              src: "E7",
-              dest: "E9",
-              incheck: false,
-              incheckmate: false
-            },
-
-            ]
->> get logic of pieces
-
-
-*/

@@ -33,24 +33,8 @@ import {possibleKnightMoves} from './movesets/knightmoves';
 import {capToPiece} from './constants/capToPiece';
 
 
-//TODO is it better to store the function for movement in the piece components themselves or here?
-
-// TODO [AFTER EVERYTHING IS WORKING!!!] change everything to make ABC as X, 123 as Y
+// TODO change everything to make ABC as X, 123 as Y
 // 8:  ["a", "b", "c", "d", "e", "f", "g", "h"];
-//    ... ... ...
-/// 1:  ["a", "b", "c", "d", "e", "f", "g", "h"];
-
-/// change as many for loops to MAPS as can
-/// REFCTOR!!!
-
-//TODO NEXT 5/28
-// current player div CSS!!!!
-// Modal for check warning as well as flash piece function!!!
-// storing moves and caps properly?
-// pawn transform
-// castling
-// fixes and make it look better
-// concede button
 
 
 class App extends React.Component{
@@ -251,21 +235,3 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-//connect(mapStateToProps, mapDispatchToProps)(App)
-
-
-// TODO next:
-//________________________________________________________
-// Clear out unecessary data clutter
-// piece components contain their behavior info
-
-
-// Sidebar with move-by move readout
-// Sidebar with "Taken Pieces"
-//// able to download or send moves readout to an email address
-
-////stretch Goals:
-/////////////////////////////////
-// login with backend
-// play against ME!
-// each person gets an email when another play made a move
