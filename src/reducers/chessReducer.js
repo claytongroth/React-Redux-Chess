@@ -31,12 +31,12 @@ export const initialChessState = {
   pastBoard:[],
   board: {
     a: ["br","bn","bb","bq","bk","bb","bn","br"],
-    b: ["bp","bp","bp","bp","bp","e","bp","bp"],
-    c: ["e","e","wp","e","e","e","e","e"],
+    b: ["bp","bp","bp","bp","bp","bp","bp","bp"],
+    c: ["e","e","e","e","e","e","e","e"],
     d: ["e","e","e","e","e","e","e","e"],
     e: ["e","e","e","e","e","e","e","e"],
-    f: ["e","e","e","e","bp","e","e","e"],
-    g: ["wp","e","wp","wp","wp","wp","wp","wp"],
+    f: ["e","e","e","e","e","e","e","e"],
+    g: ["wp","wp","wp","wp","wp","wp","wp","wp"],
     h: ["wr","wn","wb","wq","wk","wb","wn","wr"]
   },
   futureBoard:[]
