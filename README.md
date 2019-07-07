@@ -1,7 +1,7 @@
 ## React-Redux-Chess
 A playable Two-player chess game I created from scratch with React/React-Redux!
 
-![Chess](screencap.PNG)
+![Chess](demogif.gif)
 
 
 
