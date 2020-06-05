@@ -1,6 +1,0 @@
-username = doadmin
-password = zurksu06i7liaf1j
-host = chess-postgres-do-user-7583540-0.a.db.ondigitalocean.com
-port = 25060
-database = defaultdb
-sslmode = require
