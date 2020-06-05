@@ -31,6 +31,7 @@ import {possibleBishopMoves} from './movesets/bishopmoves';
 import {possibleKingMoves} from './movesets/kingmoves';
 import {possibleKnightMoves} from './movesets/knightmoves';
 import {capToPiece} from './constants/capToPiece';
+import Header from './components/Header';
 
 
 // TODO change everything to make ABC as X, 123 as Y
@@ -43,8 +44,7 @@ class App extends React.Component{
     const {selectedPiece,selectedPieceSrc,captures,availables} = this.props.highlightedSquares
     const piece = key.currentTarget.getAttribute("piece")
     const square = key.currentTarget.getAttribute("keyp")
-    //console.log("Square: ", square, "Piece: ", piece, "XY: ", toXY(square))
-    // maybe consider doing different highlight for enemies on hover....
+
     if (piece != "e" && piece.charAt(0) === this.props.currentPlayer){
       this.calculateAvailableSquares(square, piece, this.props.board)
     }
@@ -54,13 +54,11 @@ class App extends React.Component{
     }
   }
   componentDidUpdate(prevProps){
-    //console.log("component did update")
     if(prevProps.board !== this.props.board){
       //console.log("updating board....", this.props.board)
     }
- }
+  }
   calculateAvailableSquares(pos, piece, board){
-    //console.log("calculateAvailableSquares fired with: ", pos, piece, board)
     let moves;
     switch(piece){
       case "wr": case "br":
@@ -87,9 +85,8 @@ class App extends React.Component{
         moves = possibleKnightMoves(pos, this.props.board, piece)
         this.props.highlightSquares(moves)
         break;
-        //this.readyToMove(piece, src, dest)
-        // next a function where I can click and submit a move...
-        //// this function also alows highlighting...
+      default:
+        break;
     }
   }
   readyToMove(selectedPiece, selectedPieceSrc, square, captures){
@@ -151,41 +148,44 @@ class App extends React.Component{
   render(){
     return (
       <div className="App">
-        <div id="main" className="row">
-          <div className="col-lg-4 col-md-6 col-sm-12 boardside no-gutters border border-secondary">
-            <Board
-              parentMethod={(key)=>this.squareClick(key)}
-              moveMe={(e)=>this.moveMeParent(e)}
-            />
+         <Header />
+        <hr/>
+        <div className="container fluid">
+          <div id="main" className="row">
+            <div className="col-lg-6 col-md-6 col-sm-12 boardside no-gutters border border-secondary">
+              <Board
+                parentMethod={(key)=>this.squareClick(key)}
+                moveMe={(e)=>this.moveMeParent(e)}
+              />
 
-          </div>
-          <div className="col-lg-4 col-md-6 col-sm-12 statside no-gutters border border-secondary">
-            This is my React-Redux Chess game!
-            <br/>
-            <button onClick={this.props.onClickButtonStart}>Start the Game</button>
-            <button onClick={this.props.onClickButtonStop}>Stop the Game</button>
+            </div>
+            <div className="col-lg-6 col-md-6 col-sm-12 statside no-gutters border border-secondary">
+              <br/>
+              <button className="start-game-btn" onClick={this.props.onClickButtonStart}>Start the Game</button>
+              <button className="end-game-btn" onClick={this.props.onClickButtonStop}>Stop the Game</button>
 
-            <br/>
-            <button onClick={()=>this.forwardOne()}>REDO</button>
-            <button onClick={()=>this.backOne()}>UNDO</button>
-            <div id="graverow" className="row">
-              <div id= "blackgrave" className="col-lg-6 col-md-6 col-sm-6 border border-light">
-                {"Black Captured: "}
-                <br/>
-                { this.blackGraveyard()}
+              <br/>
+              <button className="redo-btn" onClick={()=>this.forwardOne()}>REDO</button>
+              <button className="undo-btn" onClick={()=>this.backOne()}>UNDO</button>
+              <div id="graverow" className="row">
+                <div id= "blackgrave" className="col-lg-6 col-md-6 col-sm-6 border border-light">
+                  {"Black Captured: "}
+                  <br/>
+                  { this.blackGraveyard()}
+                </div>
+                <div id="whitegrave" className="col-lg-6 col-md-6 col-sm-6 border border-dark">
+                  {"White Captured: "}
+                  <br/>
+                  { this.whiteGraveyard()}
+                </div>
               </div>
-              <div id="whitegrave" className="col-lg-6 col-md-6 col-sm-6 border border-dark">
-                {"White Captured: "}
-                <br/>
-                { this.whiteGraveyard()}
+              <div className="col-lg-12 col-md-12 col-sm-12 current border border-secondary">
+                {"Current Player: "}{ this.props.currentPlayer === "w" ? "White" : "Black"}
               </div>
+              <br/>
+              {this.props.gameOver ? "GAME OVER": null}
+              <br/>
             </div>
-            <div className="col-lg-12 col-md-12 col-sm-12 current border border-secondary">
-              {"Current Player: "}{ this.props.currentPlayer === "w" ? "White" : "Black"}
-            </div>
-            <br/>
-            {this.props.gameOver ? "GAME OVER": null}
-            <br/>
           </div>
         </div>
       </div>
@@ -193,12 +193,7 @@ class App extends React.Component{
     }
 }
 
-// get the piece to consolelog in the click square
-// Set out a board state that stores the board each move.
-// its initial state is the starting layout.
-// the board populatess from state.chessReducer.board
 const mapStateToProps = (state) => {
-  //console.log("state from inside mapStateToProps: ", {...state})
   return {
     started: state.chessReducer.started,
     gameOver: state.chessReducer.gameOver,
